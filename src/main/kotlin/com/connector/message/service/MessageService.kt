@@ -6,6 +6,8 @@ import com.connector.message.model.message.MessageRepository
 import com.connector.message.model.ticket.TicketRepository
 import com.connector.message.port.command.MessageRequest
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -15,13 +17,24 @@ class MessageService(
     private val ticketRepository: TicketRepository,
     private val messageRepository: MessageRepository
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+    
     fun create(request: MessageRequest): Mono<Message> {
+        logger.info("Starting create message request $request")
+        val startTime = System.currentTimeMillis()
         val ticketId = request.ticketId
         
-        return if (ticketId == null) {
-            createMessageWithoutTicket(request)
+        if (ticketId == null) {
+            val totalTime = System.currentTimeMillis() - startTime
+            val message = createMessageWithoutTicket(request)
+            logger.info("Request took: ${totalTime}ms")
+            return message
         } else {
-            createMessageWithTicket(ticketId, request)
+            val message = createMessageWithTicket(ticketId, request)
+            val totalTime = System.currentTimeMillis() - startTime
+    
+            logger.info("Request took: ${totalTime}ms")
+            return message
         }
     
     }
@@ -59,4 +72,6 @@ class MessageService(
                 )
             }
     
+    private fun requestToString(request: ServerHttpRequest): String =
+        "${request.method} ${request.path}"
 }
