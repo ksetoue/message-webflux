@@ -5,5 +5,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import java.lang.RuntimeException
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class NotFoundException(message: String) : RuntimeException() {
-}
+class ResourceNotFoundException(msg: String) : RuntimeException(msg)

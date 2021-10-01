@@ -1,6 +1,5 @@
 package com.connector.message.port
 
-import com.connector.message.error.NotFoundException
 import com.connector.message.model.Company
 import com.connector.message.model.CompanyRepository
 import com.connector.message.model.Employee
